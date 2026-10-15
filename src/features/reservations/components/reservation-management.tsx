@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { WorkspaceIcon } from "@/components/workspace-icon";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
@@ -24,12 +25,16 @@ type AvailabilityResult = Awaited<ReturnType<typeof checkAvailabilityAction>>;
 type ReservationStatusFilter = "ALL" | "CONFIRMED" | "CANCELLED";
 
 const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 disabled:opacity-60";
-const labelClass = "block text-sm font-medium text-slate-700";
+  "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-60";
+const labelClass = "block text-xs font-bold text-slate-700";
 const primaryButton =
-  "rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50";
 const secondaryButton =
-  "rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50";
+const secondaryButtonSmall =
+  "inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-sm transition hover:border-blue-200 hover:text-blue-700 disabled:opacity-50";
+const dangerButton =
+  "inline-flex items-center justify-center gap-1.5 rounded-lg border border-rose-200 bg-white px-3 py-2 text-xs font-bold text-rose-700 shadow-sm transition hover:bg-rose-50 disabled:opacity-50";
 const zone = "Asia/Colombo";
 const offsetMs = 330 * 60 * 1000;
 
@@ -79,7 +84,7 @@ function FeedbackMessage({ feedback }: { feedback: Feedback | null }) {
   return (
     <div
       role="status"
-      className={`rounded-lg border px-4 py-3 text-sm ${
+      className={`rounded-xl border px-4 py-3 text-sm ${
         feedback.success
           ? "border-green-200 bg-green-50 text-green-800"
           : "border-red-200 bg-red-50 text-red-800"
@@ -241,6 +246,9 @@ export function ReservationManagement({ resources, reservations, serverNowIso }:
     setNewStartLocal(toSriLankaInput(reservation.startAt));
     setNewEndLocal(toSriLankaInput(reservation.endAt));
     setFeedback(null);
+    requestAnimationFrame(() => {
+      document.getElementById("reschedule-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }
 
   async function handleReschedule(event: FormEvent<HTMLFormElement>) {
@@ -267,211 +275,192 @@ export function ReservationManagement({ resources, reservations, serverNowIso }:
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-7">
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-blue-700">Resource Reservation Management System</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight">Reservations & Availability</h1>
-            <p className="mt-1 text-sm text-slate-600">All times shown and entered in Sri Lanka Time (UTC+05:30).</p>
+    <main className="min-h-screen flex-1 bg-[#f5f7fc] text-slate-900">
+      <div className="mx-auto w-full max-w-7xl space-y-7 px-4 py-7 sm:px-6 sm:py-9 lg:px-8">
+        <header className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#0b1a35] via-[#122c58] to-[#1846a2] p-6 text-white shadow-[0_18px_48px_-26px_rgba(22,53,122,.65)] sm:p-9">
+          <div aria-hidden="true" className="pointer-events-none absolute -right-14 -top-24 h-72 w-72 rounded-full border border-white/10 bg-white/5" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-28 right-32 h-60 w-60 rounded-full bg-sky-400/10 blur-2xl" />
+          <div className="relative flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-2xl">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-blue-100"><WorkspaceIcon name="calendar-check" size={14} /> Booking workspace</span>
+              <h1 className="mt-5 text-3xl font-extrabold tracking-tight sm:text-[40px]">A better way to book your day.</h1>
+              <p className="mt-3 max-w-xl text-sm leading-7 text-blue-100/90 sm:text-base">Find open time slots, secure a resource and keep every reservation organized, without double bookings.</p>
+              <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-blue-100"><WorkspaceIcon name="clock" size={15} /> All times in Sri Lanka (UTC+05:30)</div>
+            </div>
+            <div className="flex flex-wrap gap-2.5">
+              <Link href="/resources" className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20"><WorkspaceIcon name="layers" size={17} /> Resources</Link>
+              <button type="button" onClick={() => document.getElementById("new-reservation")?.scrollIntoView({ behavior: "smooth", block: "start" })} className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-blue-900 shadow-sm transition hover:bg-blue-50"><WorkspaceIcon name="plus" size={17} /> New booking</button>
+            </div>
           </div>
-          <Link href="/resources" className={secondaryButton}>Manage Resources</Link>
         </header>
 
-        <div className="grid gap-3 sm:grid-cols-3">
+        <section aria-label="Reservation statistics" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {[
-            { label: "Total reservations", value: reservations.length },
-            { label: "Upcoming confirmed", value: upcomingCount },
-            { label: "Cancelled / history", value: cancelledCount },
+            { label: "All reservations", value: reservations.length, helper: "Bookings on record", icon: "calendar" as const, accent: "bg-blue-50 text-blue-700" },
+            { label: "Confirmed", value: confirmedCount, helper: "Active booking records", icon: "check-circle" as const, accent: "bg-emerald-50 text-emerald-700" },
+            { label: "Upcoming", value: upcomingCount, helper: "Confirmed, future bookings", icon: "clock" as const, accent: "bg-violet-50 text-violet-700" },
+            { label: "Cancelled", value: cancelledCount, helper: "History is always preserved", icon: "archive" as const, accent: "bg-amber-50 text-amber-700" },
           ].map((item) => (
-            <div key={item.label} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-              <p className="text-sm text-slate-600">{item.label}</p>
-              <p className="mt-2 text-3xl font-bold">{item.value}</p>
+            <div key={item.label} className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_2px_12px_rgba(30,58,98,.035)]">
+              <div className="flex items-start justify-between gap-3">
+                <div><p className="text-xs font-semibold text-slate-500">{item.label}</p><p className="mt-2 text-3xl font-extrabold tracking-tight">{item.value}</p></div>
+                <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${item.accent}`}><WorkspaceIcon name={item.icon} size={21} /></span>
+              </div>
+              <p className="mt-3 text-xs text-slate-400">{item.helper}</p>
             </div>
           ))}
-        </div>
+        </section>
 
         <FeedbackMessage feedback={feedback} />
 
-        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6" aria-labelledby="create-reservation-heading">
-          <div className="mb-5">
-            <h2 id="create-reservation-heading" className="text-xl font-bold">Create New Reservation</h2>
-            <p className="mt-1 text-sm text-slate-600">Check availability, then confirm the booking. Availability can change before submission.</p>
-          </div>
-          {activeResources.length === 0 ? (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-              No active resources available. <Link href="/resources" className="font-semibold underline">Create or activate a resource first.</Link>
-            </div>
-          ) : (
-            <form onSubmit={handleCreate} className="space-y-5">
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                <label className={labelClass}>
-                  Resource <span className="text-red-600">*</span>
-                  <select value={resourceId} disabled={!!busy} onChange={(e) => { setResourceId(e.target.value); resetAvailability(); }} required className={inputClass}>
-                    {activeResources.map((resource) => (
-                      <option key={resource.id} value={resource.id}>
-                        {resource.name} — {resource.location}{resource.capacity === null ? "" : ` (capacity ${resource.capacity})`}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className={labelClass}>
-                  Requester Name <span className="text-red-600">*</span>
-                  <input className={inputClass} value={requesterName} onChange={(e) => setRequesterName(e.target.value)} required maxLength={120} placeholder="e.g. Nimal Perera" disabled={!!busy} />
-                </label>
-                <label className={labelClass}>
-                  Attendee Count (optional)
-                  <input className={inputClass} type="number" min={1} step={1} value={attendeeCount} onChange={(e) => { setAttendeeCount(e.target.value); resetAvailability(); }} placeholder="e.g. 5" disabled={!!busy} />
-                </label>
-                <label className={labelClass}>
-                  Start (Sri Lanka Time) <span className="text-red-600">*</span>
-                  <input className={inputClass} type="datetime-local" value={startLocal} onChange={(e) => { setStartLocal(e.target.value); resetAvailability(); }} required disabled={!!busy} />
-                </label>
-                <label className={labelClass}>
-                  End (Sri Lanka Time) <span className="text-red-600">*</span>
-                  <input className={inputClass} type="datetime-local" value={endLocal} onChange={(e) => { setEndLocal(e.target.value); resetAvailability(); }} required disabled={!!busy} />
-                </label>
-                <label className={labelClass}>
-                  Team (optional)
-                  <input className={inputClass} value={team} onChange={(e) => setTeam(e.target.value)} maxLength={120} placeholder="e.g. Engineering" disabled={!!busy} />
-                </label>
-              </div>
-              <label className={labelClass}>
-                Purpose (optional)
-                <textarea className={inputClass} rows={2} value={purpose} onChange={(e) => setPurpose(e.target.value)} maxLength={500} placeholder="Meeting purpose" disabled={!!busy} />
-              </label>
-              <div className="flex flex-wrap items-center gap-3">
-                <button type="button" onClick={handleAvailability} disabled={!!busy || !resourceId || !startLocal || !endLocal} className={secondaryButton}>
-                  {busy === "availability" ? "Checking..." : "Check Availability"}
-                </button>
-                <button type="submit" disabled={!!busy || !resourceId} className={primaryButton}>
-                  {busy === "create" ? "Creating..." : "Create Reservation"}
-                </button>
-              </div>
-              {availabilityResult && (
-                <div role="status" className={`rounded-lg border p-4 text-sm ${
-                  availabilityResult.success && availabilityResult.availability.isAvailable
-                    ? "border-green-200 bg-green-50 text-green-800"
-                    : "border-amber-200 bg-amber-50 text-amber-900"
-                }`}>
-                  <p className="font-semibold">{availabilityResult.message}</p>
-                  {availabilityResult.success && availabilityResult.availability.conflictingReservations.length > 0 && (
-                    <div className="mt-2 space-y-1">
-                      <p>Conflicting confirmed bookings:</p>
-                      {availabilityResult.availability.conflictingReservations.map((conflict) => (
-                        <p key={conflict.id}>{formatSriLanka(conflict.startAt)} – {formatSriLanka(conflict.endAt)}</p>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </form>
-          )}
-        </section>
-
         {rescheduling && (
-          <section id="reschedule-panel" className="rounded-xl border-2 border-blue-300 bg-white p-5 shadow-sm sm:p-6">
-            <h2 className="text-xl font-bold">Reschedule Reservation</h2>
-            <p className="mt-1 text-sm text-slate-600">{rescheduling.requesterName} — {rescheduling.resource.name}</p>
-            <form onSubmit={handleReschedule} className="mt-5 space-y-4">
+          <section id="reschedule-panel" aria-labelledby="reschedule-heading" className="scroll-mt-24 overflow-hidden rounded-2xl border-2 border-blue-200 bg-white shadow-[0_8px_35px_rgba(37,99,235,.08)]">
+            <div className="flex flex-wrap items-start justify-between gap-3 border-b border-blue-100 bg-blue-50/70 px-5 py-5 sm:px-7">
+              <div className="flex items-start gap-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-700 text-white"><WorkspaceIcon name="repeat" size={21} /></span>
+                <div><h2 id="reschedule-heading" className="text-xl font-extrabold text-slate-900">Reschedule booking</h2><p className="mt-1 text-sm text-slate-600">{rescheduling.requesterName} · {rescheduling.resource.name}</p></div>
+              </div>
+              <button type="button" disabled={!!busy} onClick={() => setRescheduling(null)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Close</button>
+            </div>
+            <form onSubmit={handleReschedule} className="space-y-5 p-5 sm:p-7">
               <div className="grid gap-4 md:grid-cols-3">
-                <label className={labelClass}>
-                  New Resource
-                  <select className={inputClass} value={newResourceId} required disabled={!!busy} onChange={(e) => setNewResourceId(e.target.value)}>
-                    {activeResources.map((resource) => (
-                      <option key={resource.id} value={resource.id}>{resource.name} — {resource.location}</option>
-                    ))}
-                  </select>
+                <label className={labelClass}>Resource
+                  <select className={inputClass} value={newResourceId} required disabled={!!busy} onChange={(e) => setNewResourceId(e.target.value)}>{activeResources.map((resource) => <option key={resource.id} value={resource.id}>{resource.name} — {resource.location}</option>)}</select>
                 </label>
-                <label className={labelClass}>
-                  New Start (Sri Lanka Time)
+                <label className={labelClass}>New start · Sri Lanka Time
                   <input className={inputClass} type="datetime-local" value={newStartLocal} required disabled={!!busy} onChange={(e) => setNewStartLocal(e.target.value)} />
                 </label>
-                <label className={labelClass}>
-                  New End (Sri Lanka Time)
+                <label className={labelClass}>New end · Sri Lanka Time
                   <input className={inputClass} type="datetime-local" value={newEndLocal} required disabled={!!busy} onChange={(e) => setNewEndLocal(e.target.value)} />
                 </label>
               </div>
-              <div className="flex gap-3">
-                <button type="submit" className={primaryButton} disabled={!!busy || !newResourceId}>{busy === "reschedule" ? "Saving..." : "Save Reschedule"}</button>
-                <button type="button" className={secondaryButton} disabled={!!busy} onClick={() => setRescheduling(null)}>Close</button>
+              <div className="flex flex-wrap items-center gap-3">
+                <button type="submit" className={primaryButton} disabled={!!busy || !newResourceId}><WorkspaceIcon name="check" size={17} />{busy === "reschedule" ? "Saving changes..." : "Save reschedule"}</button>
+                <p className="text-xs text-slate-500">The booking keeps its original reservation ID.</p>
               </div>
             </form>
           </section>
         )}
 
-        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6" aria-labelledby="reservation-list-heading">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h2 id="reservation-list-heading" className="text-xl font-bold">Reservation List & History</h2>
-              <p className="mt-1 text-sm text-slate-600">{filtered.length} matching reservations · {confirmedCount} confirmed total</p>
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.7fr)_minmax(275px,.8fr)]">
+          <section id="new-reservation" aria-labelledby="create-reservation-heading" className="scroll-mt-24 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="flex items-start gap-3 border-b border-slate-100 bg-gradient-to-r from-blue-50 to-white px-5 py-5 sm:px-7">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-700 text-white"><WorkspaceIcon name="plus" size={21} /></span>
+              <div><p className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-blue-700">Create a booking</p><h2 id="create-reservation-heading" className="mt-1 text-xl font-extrabold tracking-tight sm:text-2xl">New reservation</h2><p className="mt-1 text-sm leading-6 text-slate-500">Choose a resource and time, then check availability before booking.</p></div>
             </div>
-            <button className={secondaryButton} onClick={() => router.refresh()} type="button" disabled={!!busy}>Refresh</button>
-          </div>
-          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            <label className={labelClass}>
-              Resource
-              <select className={inputClass} value={filterResource} onChange={(e) => setFilterResource(e.target.value)}>
-                <option value="ALL">All resources</option>
-                {resources.map((resource) => <option key={resource.id} value={resource.id}>{resource.name} — {resource.location}</option>)}
-              </select>
-            </label>
-            <label className={labelClass}>
-              Status
-              <select className={inputClass} value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as ReservationStatusFilter)}>
-                <option value="ALL">All statuses</option>
-                <option value="CONFIRMED">Confirmed</option>
-                <option value="CANCELLED">Cancelled</option>
-              </select>
-            </label>
-            <label className={labelClass}>
-              Date (Sri Lanka Time)
-              <input className={inputClass} type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} />
-            </label>
-            <label className={labelClass}>
-              Search
-              <input className={inputClass} type="search" placeholder="Name, room, team, purpose" value={search} onChange={(e) => setSearch(e.target.value)} />
-            </label>
-          </div>
+            {activeResources.length === 0 ? (
+              <div className="m-5 rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900 sm:m-7"><div className="flex items-start gap-3"><WorkspaceIcon name="alert" size={20} className="mt-0.5 shrink-0" /><div><p className="font-bold">No active resources available</p><p className="mt-1"> <Link href="/resources" className="font-bold underline">Create or activate a resource</Link> before making a reservation.</p></div></div></div>
+            ) : (
+              <form onSubmit={handleCreate} className="space-y-5 p-5 sm:p-7">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className={`${labelClass} sm:col-span-2`}>Resource <span className="text-rose-600">*</span>
+                    <select value={resourceId} disabled={!!busy} onChange={(e) => { setResourceId(e.target.value); resetAvailability(); }} required className={inputClass}>
+                      {activeResources.map((resource) => <option key={resource.id} value={resource.id}>{resource.name} — {resource.location}{resource.capacity === null ? "" : ` (capacity ${resource.capacity})`}</option>)}
+                    </select>
+                  </label>
+                  <label className={labelClass}>Requested by <span className="text-rose-600">*</span>
+                    <input className={inputClass} value={requesterName} onChange={(e) => setRequesterName(e.target.value)} required maxLength={120} placeholder="Full name" disabled={!!busy} />
+                  </label>
+                  <label className={labelClass}>Team <span className="font-normal text-slate-400">(optional)</span>
+                    <input className={inputClass} value={team} onChange={(e) => setTeam(e.target.value)} maxLength={120} placeholder="e.g. Engineering" disabled={!!busy} />
+                  </label>
+                  <label className={labelClass}>Starts at <span className="text-rose-600">*</span>
+                    <input className={inputClass} type="datetime-local" value={startLocal} onChange={(e) => { setStartLocal(e.target.value); resetAvailability(); }} required disabled={!!busy} />
+                  </label>
+                  <label className={labelClass}>Ends at <span className="text-rose-600">*</span>
+                    <input className={inputClass} type="datetime-local" value={endLocal} onChange={(e) => { setEndLocal(e.target.value); resetAvailability(); }} required disabled={!!busy} />
+                  </label>
+                  <label className={labelClass}>Attendees <span className="font-normal text-slate-400">(optional)</span>
+                    <input className={inputClass} type="number" min={1} step={1} value={attendeeCount} onChange={(e) => { setAttendeeCount(e.target.value); resetAvailability(); }} placeholder="e.g. 5" disabled={!!busy} />
+                  </label>
+                  <label className={`${labelClass} sm:col-span-2`}>Purpose <span className="font-normal text-slate-400">(optional)</span>
+                    <textarea className={`${inputClass} resize-y`} rows={3} value={purpose} onChange={(e) => setPurpose(e.target.value)} maxLength={500} placeholder="What is this reservation for?" disabled={!!busy} />
+                  </label>
+                </div>
+                <div className="flex flex-wrap gap-3 border-t border-slate-100 pt-5">
+                  <button type="button" onClick={handleAvailability} disabled={!!busy || !resourceId || !startLocal || !endLocal} className={secondaryButton}><WorkspaceIcon name="search" size={17} />{busy === "availability" ? "Checking..." : "Check availability"}</button>
+                  <button type="submit" disabled={!!busy || !resourceId} className={primaryButton}><WorkspaceIcon name="calendar-check" size={18} />{busy === "create" ? "Creating booking..." : "Confirm reservation"}</button>
+                </div>
+                {availabilityResult && (
+                  <div role="status" aria-live="polite" className={`rounded-xl border px-4 py-4 text-sm ${availabilityResult.success && availabilityResult.availability.isAvailable ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-900"}`}>
+                    <div className="flex items-start gap-2.5"><WorkspaceIcon name={availabilityResult.success && availabilityResult.availability.isAvailable ? "check-circle" : "alert"} size={20} className="mt-0.5 shrink-0" /><div><p className="font-bold">{availabilityResult.message}</p>
+                      {availabilityResult.success && availabilityResult.availability.conflictingReservations.length > 0 && (
+                        <div className="mt-3 space-y-1 text-xs"><p className="font-semibold">Existing reservations in this time range:</p>{availabilityResult.availability.conflictingReservations.map((conflict) => <p key={conflict.id}>{formatSriLanka(conflict.startAt)} – {formatSriLanka(conflict.endAt)}</p>)}</div>
+                      )}
+                    </div></div>
+                  </div>
+                )}
+              </form>
+            )}
+          </section>
 
-          {filtered.length === 0 ? (
-            <div className="mt-6 rounded-lg border border-dashed border-slate-300 px-4 py-10 text-center text-sm text-slate-600">
-              {reservations.length === 0
-                ? "No reservations yet. Create the first booking above."
-                : "No reservations match the selected filters."}
+          <aside className="space-y-4">
+            <div className="rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-6 shadow-sm">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-700 text-white"><WorkspaceIcon name="shield" size={22} /></span>
+              <h3 className="mt-4 text-lg font-extrabold tracking-tight">Book with confidence</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">Every reservation is checked against the same resource&apos;s confirmed bookings.</p>
+              <div className="mt-5 space-y-4">
+                {[
+                  { title: "Select a resource", detail: "Choose from active rooms or equipment." },
+                  { title: "Check a time slot", detail: "See whether your dates overlap a booking." },
+                  { title: "Confirm your booking", detail: "Availability is checked again when saving." },
+                ].map((step, index) => (
+                  <div key={step.title} className="flex items-start gap-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-xs font-extrabold text-blue-700 shadow-sm ring-1 ring-blue-100">{index + 1}</span><div><p className="text-sm font-bold text-slate-800">{step.title}</p><p className="mt-1 text-xs leading-5 text-slate-500">{step.detail}</p></div></div>
+                ))}
+              </div>
             </div>
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex items-center gap-2 text-sm font-bold text-slate-800"><WorkspaceIcon name="info" size={19} className="text-blue-600" /> A quick reminder</div>
+              <p className="mt-2 text-xs leading-6 text-slate-500">Cancelled bookings stay in history but no longer block their time slots. Rescheduling is available for future confirmed bookings.</p>
+            </div>
+          </aside>
+        </div>
+
+        <section aria-labelledby="reservation-list-heading" className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="border-b border-slate-100 px-5 py-6 sm:px-7">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div><p className="inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.15em] text-blue-700"><WorkspaceIcon name="list" size={15} /> Booking directory</p><h2 id="reservation-list-heading" className="mt-1 text-xl font-extrabold tracking-tight sm:text-2xl">Reservations & history</h2><p className="mt-1 text-sm text-slate-500">{filtered.length} matching reservations · {confirmedCount} confirmed total</p></div>
+              <button className={secondaryButton} onClick={() => router.refresh()} type="button" disabled={!!busy}><WorkspaceIcon name="refresh" size={16} /> Refresh</button>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-2" aria-label="Filter by booking status">
+              {(["ALL", "CONFIRMED", "CANCELLED"] as const).map((status) => (
+                <button key={status} type="button" aria-pressed={filterStatus === status} onClick={() => setFilterStatus(status)} className={`rounded-full px-4 py-2 text-xs font-bold transition ${filterStatus === status ? "bg-blue-700 text-white shadow-sm" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>{status === "ALL" ? "All bookings" : status === "CONFIRMED" ? "Confirmed" : "Cancelled"}</button>
+              ))}
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)]">
+              <label className="relative block"><span className="sr-only">Search reservations</span><WorkspaceIcon name="search" size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" /><input className={`${inputClass} mt-0 pl-10`} type="search" placeholder="Search requester, team or resource..." value={search} onChange={(e) => setSearch(e.target.value)} /></label>
+              <label><span className="sr-only">Filter by resource</span><select className={`${inputClass} mt-0`} value={filterResource} onChange={(e) => setFilterResource(e.target.value)}><option value="ALL">All resources</option>{resources.map((resource) => <option key={resource.id} value={resource.id}>{resource.name} — {resource.location}</option>)}</select></label>
+              <label><span className="sr-only">Filter by Sri Lanka date</span><input aria-label="Filter by Sri Lanka calendar date" title="Filter by Sri Lanka calendar date" className={`${inputClass} mt-0`} type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} /></label>
+            </div>
+            {(filterStatus !== "ALL" || filterResource !== "ALL" || filterDate || search) && <button type="button" className="mt-3 text-xs font-bold text-blue-700 hover:underline" onClick={() => { setFilterStatus("ALL"); setFilterResource("ALL"); setFilterDate(""); setSearch(""); }}>Clear all filters</button>}
+          </div>
+          {filtered.length === 0 ? (
+            <div className="mx-5 my-6 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-5 py-16 text-center sm:mx-7"><span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-sm"><WorkspaceIcon name="calendar" size={25} /></span><h3 className="mt-4 text-lg font-extrabold">{reservations.length === 0 ? "No bookings yet" : "No matching reservations"}</h3><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">{reservations.length === 0 ? "Create your first reservation using the form above." : "Try a different search term, resource or date filter."}</p></div>
           ) : (
-            <div className="mt-5 space-y-3">
+            <div className="grid gap-4 p-5 lg:grid-cols-2 sm:p-7">
               {filtered.map((reservation) => {
                 const canModify = reservation.status === "CONFIRMED" && new Date(reservation.startAt).getTime() > nowMs;
+                const isCancelled = reservation.status === "CANCELLED";
                 return (
-                  <article key={reservation.id} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-semibold text-slate-900">{reservation.resource.name}</h3>
-                          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${reservation.status === "CONFIRMED" ? "bg-green-100 text-green-800" : "bg-slate-200 text-slate-700"}`}>
-                            {reservation.status}
-                          </span>
-                          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-800">{timingLabel(reservation, nowMs)}</span>
-                        </div>
-                        <p className="mt-1 text-sm text-slate-600">{reservation.resource.location} · Requested by {reservation.requesterName}</p>
-                        <p className="mt-2 text-sm font-medium">{formatSriLanka(reservation.startAt)} → {formatSriLanka(reservation.endAt)}</p>
-                        <p className="mt-1 text-xs text-slate-500">{[
-                          reservation.team ? `Team: ${reservation.team}` : "",
-                          reservation.attendeeCount !== null ? `Attendees: ${reservation.attendeeCount}` : "",
-                          reservation.purpose ? `Purpose: ${reservation.purpose}` : "",
-                        ].filter(Boolean).join(" · ") || "No additional details"}</p>
-                        {reservation.cancelledAt && <p className="mt-1 text-xs text-slate-500">Cancelled: {formatSriLanka(reservation.cancelledAt)}</p>}
+                  <article key={reservation.id} className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-blue-200 hover:shadow-md">
+                    <div className="flex-1 p-5">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-[0.13em] text-blue-700"><WorkspaceIcon name="calendar" size={14} /> Reservation</span>
+                        <div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold ${isCancelled ? "bg-slate-100 text-slate-600" : "bg-emerald-50 text-emerald-700"}`}>{reservation.status}</span><span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-bold text-blue-700">{timingLabel(reservation, nowMs)}</span></div>
                       </div>
-                      {canModify && (
-                        <div className="flex flex-wrap gap-2">
-                          <button type="button" className={secondaryButton} disabled={!!busy} onClick={() => beginReschedule(reservation)}>Reschedule</button>
-                          <button type="button" className="rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50" disabled={!!busy} onClick={() => handleCancel(reservation)}>
-                            {busy === reservation.id ? "Cancelling..." : "Cancel"}
-                          </button>
-                        </div>
-                      )}
+                      <h3 className="mt-4 break-words text-lg font-extrabold tracking-tight text-slate-900">{reservation.resource.name}</h3>
+                      <p className="mt-1 flex items-start gap-1.5 text-xs text-slate-500"><WorkspaceIcon name="pin" size={15} className="shrink-0" />{reservation.resource.location}</p>
+                      <div className="mt-4 grid gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2">
+                        <div><p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">Starts</p><p className="mt-1 text-sm font-bold text-slate-800">{formatSriLanka(reservation.startAt)}</p></div>
+                        <div><p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">Ends</p><p className="mt-1 text-sm font-bold text-slate-800">{formatSriLanka(reservation.endAt)}</p></div>
+                      </div>
+                      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-600"><span className="inline-flex items-center gap-1.5"><WorkspaceIcon name="users" size={15} className="text-slate-400" />{reservation.requesterName}</span>{reservation.attendeeCount !== null && <span className="inline-flex items-center gap-1.5"><WorkspaceIcon name="users" size={15} className="text-slate-400" />{reservation.attendeeCount} attendees</span>}{reservation.team && <span className="inline-flex items-center gap-1.5"><WorkspaceIcon name="briefcase" size={15} className="text-slate-400" />{reservation.team}</span>}</div>
+                      {reservation.purpose && <p className="mt-3 border-l-2 border-blue-200 pl-3 text-xs leading-5 text-slate-500">{reservation.purpose}</p>}
+                      {reservation.cancelledAt && <p className="mt-3 text-[11px] text-slate-400">Cancelled on {formatSriLanka(reservation.cancelledAt)}</p>}
+                    </div>
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/60 px-5 py-3.5">
+                      <span className="text-[11px] font-semibold text-slate-400">{canModify ? "Future booking · Manage below" : isCancelled ? "Cancelled booking" : "Read-only history"}</span>
+                      {canModify && <div className="flex flex-wrap gap-2"><button type="button" className={secondaryButtonSmall} disabled={!!busy} onClick={() => beginReschedule(reservation)}><WorkspaceIcon name="repeat" size={14} /> Reschedule</button><button type="button" className={dangerButton} disabled={!!busy} onClick={() => handleCancel(reservation)}><WorkspaceIcon name="x-circle" size={14} />{busy === reservation.id ? "Cancelling..." : "Cancel"}</button></div>}
                     </div>
                   </article>
                 );
@@ -479,6 +468,7 @@ export function ReservationManagement({ resources, reservations, serverNowIso }:
             </div>
           )}
         </section>
+        <p className="pb-4 text-center text-xs text-slate-400">RRMS · Reservations and availability management</p>
       </div>
     </main>
   );
